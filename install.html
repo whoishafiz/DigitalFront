@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<!-- TODO: set #buy-link's href to the real Gumroad product URL once published -->
+<title>Digital Front — Web Flasher</title>
+<script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js"></script>
+<style>
+  :root { --bg:#0F1729; --panel:#171f33; --red:#EF4444; --text:#F1F5F9; --muted:#94A3B8; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:var(--text);
+         min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .card { background:var(--panel); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:32px;
+          max-width:480px; width:100%; }
+  h1 { margin:0 0 4px; font-size:1.6rem; }
+  .sub { color:var(--muted); font-size:.9rem; margin-bottom:24px; }
+  ol { color:var(--muted); font-size:.88rem; line-height:1.7; padding-left:1.2rem; margin:20px 0; }
+  ol b { color:var(--text); }
+  button[slot="activate"] {
+    width:100%; padding:14px; border:none; border-radius:10px; background:var(--red); color:#fff;
+    font-size:1rem; font-weight:700; cursor:pointer; margin-top:8px;
+  }
+  button[slot="activate"]:hover { opacity:.9; }
+  [slot="unsupported"], [slot="not-allowed"] { display:block; color:var(--red); font-size:.85rem; margin-top:8px; }
+  footer { color:var(--muted); font-size:.75rem; margin-top:24px; text-align:center; }
+  .gate { background:#1E293B; border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:14px 16px; margin-bottom:20px; }
+  .gate label { display:flex; gap:10px; align-items:flex-start; font-size:.85rem; color:var(--text); cursor:pointer; }
+  .gate input { margin-top:2px; }
+  .gate a { color:var(--red); }
+  esp-web-install-button { display:none; }
+  esp-web-install-button.unlocked { display:block; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Digital Front</h1>
+    <div class="sub">One-click flashing, right from your browser. No software to install.</div>
+
+    <div class="gate">
+      <label>
+        <input type="checkbox" id="own-check" onchange="document.querySelector('esp-web-install-button').classList.toggle('unlocked', this.checked)">
+        I purchased Digital Front on Gumroad and am flashing hardware I own.
+        Haven't bought it yet? <a href="#" id="buy-link">Get it here</a> first.
+      </label>
+    </div>
+
+    <ol>
+      <li>Plug your ESP32-S3 board into this computer over <b>USB</b>.</li>
+      <li>Click <b>Connect &amp; Install</b> below.</li>
+      <li>Pick your board's port from the browser's popup list.</li>
+      <li>Wait for flashing to finish (about 30&ndash;60 seconds) &mdash; don't unplug.</li>
+      <li>Once done, look for <b>&quot;Digital Front&quot;</b> in your Wi-Fi list and connect &mdash;
+          the setup guide takes it from there.</li>
+    </ol>
+
+    <esp-web-install-button manifest="manifest.json">
+      <button slot="activate">Connect &amp; Install</button>
+      <span slot="unsupported">
+        Your browser doesn't support Web Serial. Use a recent <b>Chrome</b> or <b>Edge</b> on desktop
+        (mobile browsers and Firefox/Safari aren't supported by this flashing method).
+      </span>
+      <span slot="not-allowed">
+        This page needs to be served over HTTPS (or from <code>localhost</code>) for the browser to
+        allow USB access &mdash; check how you're opening this page.
+      </span>
+    </esp-web-install-button>
+
+    <footer>Digital Front &middot; AutoMate Vol.1 &middot; by Whiz Works &middot; not licensed for use without purchase</footer>
+  </div>
+</body>
+</html>
