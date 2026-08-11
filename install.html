@@ -25,10 +25,24 @@
   button[slot="activate"]:hover { opacity:.9; }
   [slot="unsupported"], [slot="not-allowed"] { display:block; color:var(--red); font-size:.85rem; margin-top:8px; }
   footer { color:var(--muted); font-size:.75rem; margin-top:24px; text-align:center; }
-  .gate { background:#1E293B; border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:14px 16px; margin-bottom:20px; }
-  .gate label { display:flex; gap:10px; align-items:flex-start; font-size:.85rem; color:var(--text); cursor:pointer; }
-  .gate input { margin-top:2px; }
+  .gate { background:#1E293B; border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:16px; margin-bottom:20px; }
+  .gate p { font-size:.83rem; color:var(--muted); margin:0 0 10px; }
   .gate a { color:var(--red); }
+  .gate-row { display:flex; gap:8px; }
+  .gate-row input[type=text] {
+    flex:1; padding:10px 12px; border-radius:8px; border:1.5px solid rgba(255,255,255,.15);
+    background:#0F1729; color:var(--text); font-family:ui-monospace,monospace; font-size:.85rem; outline:none;
+  }
+  .gate-row input[type=text]:focus { border-color:var(--red); }
+  .gate-row button {
+    padding:10px 16px; border:none; border-radius:8px; background:#334155; color:#fff;
+    font-size:.85rem; font-weight:600; cursor:pointer; white-space:nowrap;
+  }
+  .gate-row button:hover { opacity:.85; }
+  .gate-row button:disabled { opacity:.5; cursor:default; }
+  #gate-msg { font-size:.8rem; margin-top:8px; min-height:1.2em; }
+  #gate-msg.ok { color:#4ADE80; }
+  #gate-msg.err { color:var(--red); }
   esp-web-install-button { display:none; }
   esp-web-install-button.unlocked { display:block; }
 </style>
@@ -39,11 +53,14 @@
     <div class="sub">One-click flashing, right from your browser. No software to install.</div>
 
     <div class="gate">
-      <label>
-        <input type="checkbox" id="own-check" onchange="document.querySelector('esp-web-install-button').classList.toggle('unlocked', this.checked)">
-        I purchased Digital Front on Gumroad and am flashing hardware I own.
-        Haven't bought it yet? <a href="#" id="buy-link">Get it here</a> first.
-      </label>
+      <p>Enter the license key from your Gumroad receipt to unlock flashing.
+        Haven't bought it yet? <a href="#" id="buy-link">Get it here</a> first.</p>
+      <div class="gate-row">
+        <input type="text" id="license-input" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"
+               onkeydown="if(event.key==='Enter')verifyLicenseKey()">
+        <button id="verify-btn" onclick="verifyLicenseKey()">Verify</button>
+      </div>
+      <div id="gate-msg"></div>
     </div>
 
     <ol>
@@ -69,5 +86,46 @@
 
     <footer>Digital Front &middot; AutoMate Vol.1 &middot; by Whiz Works &middot; not licensed for use without purchase</footer>
   </div>
+
+<script>
+  // TODO: set to the real Cloudflare Worker URL after deploying cloudflare-worker.js
+  const WORKER_URL = "https://REPLACE_ME.workers.dev";
+
+  async function verifyLicenseKey() {
+    const input = document.getElementById('license-input');
+    const btn = document.getElementById('verify-btn');
+    const msg = document.getElementById('gate-msg');
+    const key = input.value.trim();
+
+    if (!key) { msg.textContent = 'Enter your license key first.'; msg.className = 'err'; return; }
+
+    btn.disabled = true; btn.textContent = 'Checking…';
+    msg.textContent = ''; msg.className = '';
+
+    try {
+      const r = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ license_key: key }),
+      });
+      const data = await r.json();
+
+      if (data.valid) {
+        msg.textContent = '✓ Verified — you\'re good to flash.';
+        msg.className = 'ok';
+        document.querySelector('esp-web-install-button').classList.add('unlocked');
+        input.disabled = true;
+      } else {
+        msg.textContent = 'That key didn\'t verify. Double-check it against your Gumroad receipt.';
+        msg.className = 'err';
+      }
+    } catch (e) {
+      msg.textContent = 'Could not reach the verification service — try again in a moment.';
+      msg.className = 'err';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Verify';
+    }
+  }
+</script>
 </body>
 </html>
