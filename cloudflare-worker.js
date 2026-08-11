@@ -17,7 +17,7 @@
 
 // Fill this in once the Gumroad listing exists — it's the short code in your
 // product's Gumroad URL (gumroad.com/l/THIS_PART), not a secret.
-const GUMROAD_PRODUCT_PERMALINK = "REPLACE_ME";
+const GUMROAD_PRODUCT_PERMALINK = "ejarzu";
 
 // Only this origin is allowed to call the worker — keeps it from being used
 // as a free generic Gumroad-verify proxy by anyone else. Update if the

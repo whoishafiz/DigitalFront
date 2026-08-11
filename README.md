@@ -9,18 +9,21 @@ over USB (ESP Web Tools requires them to be fetchable over HTTP/HTTPS). It
 is **not** an invitation to use the firmware without a purchase — see
 `LICENSE.txt`.
 
-Buy Digital Front: *(Gumroad link goes here once published)*
+Buy Digital Front: **https://whizworks.gumroad.com/l/ejarzu** ($17.50)
 
-## One-time setup (3 things to fill in)
+## Setup status
 
-1. **Gumroad product**: enable "Generate a unique license key per sale" in
-   the product's settings, then note its permalink (the short code in
-   `gumroad.com/l/THIS_PART`).
-2. **`cloudflare-worker.js`**: set `GUMROAD_PRODUCT_PERMALINK` to that code.
-   Deploy via Cloudflare dashboard → Workers & Pages → Create → paste the
-   file in → Deploy. Copy the resulting `*.workers.dev` URL.
-3. **`install.html`**: set `WORKER_URL` to that URL, and `#buy-link`'s
-   `href` to the real Gumroad product page.
+1. ✅ Gumroad product permalink (`ejarzu`) confirmed live and wired into
+   `cloudflare-worker.js` — verified directly against Gumroad's API
+   (returns "license does not exist for the provided product" for a bogus
+   key, meaning the product itself resolves correctly).
+2. ⬜ **`cloudflare-worker.js` still needs deploying** — Cloudflare
+   dashboard → Workers & Pages → Create → paste the file in → Deploy. Copy
+   the resulting `*.workers.dev` URL.
+3. ⬜ **`install.html`**: set `WORKER_URL` to that deployed address —
+   still a `REPLACE_ME` placeholder.
+4. ✅ `#buy-link` points at the real listing.
 
-Until all three are filled in, the flasher page still loads and shows the
-license-key box — it just won't successfully verify anything.
+Until step 3 is done, the flasher page loads fine and shows the license-key
+box, it just can't successfully verify a key yet — the Verify button will
+fail with "could not reach the verification service."
