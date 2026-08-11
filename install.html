@@ -24,6 +24,10 @@
   button[slot="activate"]:hover { opacity:.9; }
   [slot="unsupported"], [slot="not-allowed"] { display:block; color:var(--red); font-size:.85rem; margin-top:8px; }
   footer { color:var(--muted); font-size:.75rem; margin-top:24px; text-align:center; }
+  .trouble { background:#1E293B; border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:14px 16px; margin-top:16px; font-size:.83rem; color:var(--muted); line-height:1.6; }
+  .trouble b { color:var(--text); }
+  .trouble button { background:#334155; color:#fff; border:none; border-radius:6px; padding:6px 12px; font-size:.8rem; font-weight:600; cursor:pointer; margin-top:8px; }
+  .trouble button:hover { opacity:.85; }
   .gate { background:#1E293B; border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:16px; margin-bottom:20px; }
   .gate p { font-size:.83rem; color:var(--muted); margin:0 0 10px; }
   .gate a { color:var(--red); }
@@ -64,8 +68,11 @@
 
     <ol>
       <li>Plug your ESP32-S3 board into this computer over <b>USB</b>.</li>
-      <li>Click <b>Connect &amp; Install</b> below.</li>
-      <li>Pick your board's port from the browser's popup list.</li>
+      <li>Click <b>Connect &amp; Install</b> below, then <b>press and hold the BOOT
+          button</b> on your board right away &mdash; keep holding it.</li>
+      <li>Pick your board's port from the browser's popup list. Keep holding BOOT
+          until you see it actually start writing (a progress bar/percentage) &mdash;
+          <i>then</i> let go.</li>
       <li>Wait for flashing to finish (about 30&ndash;60 seconds) &mdash; don't unplug.</li>
       <li>Once done, look for <b>&quot;Digital Front&quot;</b> in your Wi-Fi list and connect &mdash;
           the setup guide takes it from there.</li>
@@ -83,11 +90,19 @@
       </span>
     </esp-web-install-button>
 
+    <div class="trouble">
+      <b>Stuck on "Connecting…" or it failed partway?</b> This board needs BOOT held
+      at the exact right moment, and the browser can leave the connection stuck
+      after a failed try. Fix: unplug the board, click the button below to reload
+      this page, plug the board back in, and try again &mdash; holding BOOT the
+      whole time from step 2 until it starts actually writing.
+      <br><button onclick="location.reload()">Reload this page</button>
+    </div>
+
     <footer>Digital Front &middot; AutoMate Vol.1 &middot; by Whiz Works &middot; not licensed for use without purchase</footer>
   </div>
 
 <script>
-  // TODO: set to the real Cloudflare Worker URL after deploying cloudflare-worker.js
   const WORKER_URL = "https://digitalfront.hafizmaiddin.workers.dev/";
 
   async function verifyLicenseKey() {
