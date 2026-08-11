@@ -13,11 +13,21 @@
  * -> set GUMROAD_PRODUCT_ID below (or as an Environment Variable, same name)
  * -> Deploy. Copy the resulting *.workers.dev URL into install.html's
  * WORKER_URL constant.
+ *
+ * IMPORTANT: Gumroad's verify endpoint requires product_id, not
+ * product_permalink, for any product created on/after Jan 9 2023 (this one
+ * included) — using the permalink silently fails real license checks while
+ * *looking* like it works against a bogus key (a bogus key against a
+ * permalink still returns a plausible "license does not exist" error,
+ * which is what made this look fine in testing until a real key was tried).
+ * Get the real product_id from Gumroad's own error message: call the verify
+ * endpoint once with the permalink and any key, and it echoes back the
+ * required product_id directly.
  */
 
-// Fill this in once the Gumroad listing exists — it's the short code in your
-// product's Gumroad URL (gumroad.com/l/THIS_PART), not a secret.
-const GUMROAD_PRODUCT_PERMALINK = "ejarzu";
+// Public info, not a secret — this product's Gumroad product_id (not the
+// permalink; see the IMPORTANT note above for why that distinction matters).
+const GUMROAD_PRODUCT_ID = "QqZBvpF-rmpX26qOn0GiXQ==";
 
 // Only this origin is allowed to call the worker — keeps it from being used
 // as a free generic Gumroad-verify proxy by anyone else. Update if the
@@ -33,9 +43,9 @@ function corsHeaders() {
 }
 
 async function verifyLicense(licenseKey, env) {
-  const permalink = env?.GUMROAD_PRODUCT_PERMALINK || GUMROAD_PRODUCT_PERMALINK;
+  const productId = env?.GUMROAD_PRODUCT_ID || GUMROAD_PRODUCT_ID;
   const body = new URLSearchParams({
-    product_permalink: permalink,
+    product_id: productId,
     license_key: licenseKey,
     increment_uses_count: "false", // don't consume/inflate the usage counter on every page load
   });
