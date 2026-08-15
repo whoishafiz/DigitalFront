@@ -1,18 +1,19 @@
-# Digital Front — Web Flasher
+# Digital Front — ESP32 Captive-Portal Digital Storefront (Browser Web Flasher)
 
 **AutoMate Vol.1: Low Power Apps · LPA-01 · Age: 16+**
 
-A local digital storefront and backend for small-to-medium businesses —
-inventory management, product display, live orders, operational controls.
-Branded to your identity. Accessible the moment a guest joins your Wi-Fi.
-No internet required.
+An ESP32 captive-portal digital storefront and backend for small-to-medium
+businesses — inventory management, product display, live orders,
+operational controls. Branded to your identity. No app to install, no
+internet connection needed: a guest joins your Wi-Fi and the storefront
+opens automatically, the way a hotel or airport Wi-Fi login page does.
 
 This repo hosts the browser-based installer for it: buy it on Gumroad, then
 flash your ESP32, ESP32-S3, or ESP32-C3 board straight from Chrome or Edge
-— open `install.html`, enter your license key, click, done. No build tools
-needed. ESP32-S3 is hardware-verified; classic ESP32 and ESP32-C3 are
-build-verified only (compiles clean, not yet confirmed on physical
-hardware) — see `manifest.json`'s per-chip builds.
+— open `install.html`, enter your license key, click, done. No build tools,
+no `idf.py`, no drivers to install. ESP32-S3 is hardware-verified; classic
+ESP32 and ESP32-C3 are build-verified only (compiles clean, not yet
+confirmed on physical hardware) — see `manifest.json`'s per-chip builds.
 
 It exists only to host the files a browser needs to flash a device over USB
 (ESP Web Tools requires them to be fetchable over HTTP/HTTPS) — it's **not**
