@@ -48,15 +48,6 @@ your downloaded zip — `main/`, `build_flash.bat`, `CMakeLists.txt` — is a
 complete ESP-IDF project. See `LICENSE.txt` for what you're allowed to do
 with the source.
 
-## Status: live
-
-License-key verification is fully wired up and deployed (Gumroad → Worker →
-flasher). If you're maintaining this: the Worker lives at
-`https://digitalfront.hafizmaiddin.workers.dev/`, source in
-`cloudflare-worker.js`. The install page itself is generated —
-see `_install_template.html` + `_build_install_html.py`, never hand-edit
-`install.html` directly.
-
 ### Rebuilding the firmware binaries
 
 `firmware-esp32s3.bin`/`firmware-esp32.bin`/`firmware-esp32c3.bin` are each
