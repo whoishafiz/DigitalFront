@@ -48,6 +48,24 @@ your downloaded zip — `main/`, `build_flash.bat`, `CMakeLists.txt` — is a
 complete ESP-IDF project. See `LICENSE.txt` for what you're allowed to do
 with the source.
 
+### Source delivery (always the latest version)
+
+Buyers download the source from `install.html` after their license key
+verifies — the **Download latest source** button. `cloudflare-worker.js`
+(`POST /source`) re-checks the key with Gumroad, then streams the current
+`main` of the **private** repo `whoishafiz/DigitalFront-source` as a zip, so
+nobody gets a stale upload. The button stays hidden until the Worker has a
+`GITHUB_TOKEN` secret (fine-grained PAT: that one repo, Contents read-only).
+
+To release a source update, run from the source project:
+
+```
+python tools/publish_source.py
+```
+
+It pushes an allowlisted copy of the source to `DigitalFront-source` —
+that's the whole release; no Worker or Gumroad change needed.
+
 ### Rebuilding the firmware binaries
 
 `firmware-esp32s3.bin`/`firmware-esp32.bin`/`firmware-esp32c3.bin` are each

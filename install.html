@@ -84,6 +84,17 @@
   #gate-msg { font-size:.8rem; margin-top:10px; min-height:1.2em; font-family:var(--body-font); }
   #gate-msg.ok { color:var(--accent); }
   #gate-msg.err { color:#e0666a; }
+  .source-dl { display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--border); }
+  .source-dl.unlocked { display:block; }
+  .source-dl p { margin:0 0 10px; }
+  .source-dl button {
+    padding:10px 16px; border:1px solid var(--accent-dim); border-radius:2px; background:transparent; color:var(--accent);
+    font-family:var(--mono); font-size:.78rem; letter-spacing:.3px; text-transform:uppercase; cursor:pointer;
+  }
+  .source-dl button:hover { background:var(--accent-dim); color:var(--text); }
+  .source-dl button:disabled { opacity:.5; cursor:default; }
+  #source-msg { font-size:.8rem; margin-top:8px; min-height:1.2em; color:var(--text-dim); }
+  #source-msg.err { color:#e0666a; }
   esp-web-install-button { display:none; }
   esp-web-install-button.unlocked { display:block; }
 </style>
@@ -103,6 +114,11 @@
         <button id="verify-btn" onclick="verifyLicenseKey()">Verify</button>
       </div>
       <div id="gate-msg"></div>
+      <div class="source-dl" id="source-dl">
+        <p>Want to customize it? Download the full ESP-IDF source &mdash; always the latest version.</p>
+        <button id="source-btn" onclick="downloadSource()">Download latest source (.zip)</button>
+        <div id="source-msg"></div>
+      </div>
     </div>
 
     <ol>
@@ -150,6 +166,7 @@
 
 <script>
   const WORKER_URL = "https://digitalfront.whizworks.workers.dev/";
+  let verifiedKey = '';
 
   async function verifyLicenseKey() {
     const input = document.getElementById('license-input');
@@ -175,6 +192,9 @@
         msg.className = 'ok';
         document.querySelector('esp-web-install-button').classList.add('unlocked');
         input.disabled = true;
+        verifiedKey = key;
+        // Older Worker deployments don't send source_available — button stays hidden.
+        if (data.source_available) document.getElementById('source-dl').classList.add('unlocked');
       } else {
         msg.textContent = 'That key didn\'t verify. Double-check it against your Gumroad receipt.';
         msg.className = 'err';
@@ -184,6 +204,35 @@
       msg.className = 'err';
     } finally {
       btn.disabled = false; btn.textContent = 'Verify';
+    }
+  }
+
+  // Source is fetched fresh from the private repo on every download, so it's
+  // always the current release — nothing to re-upload to Gumroad.
+  async function downloadSource() {
+    const btn = document.getElementById('source-btn');
+    const msg = document.getElementById('source-msg');
+    btn.disabled = true; msg.className = ''; msg.textContent = 'Preparing download…';
+    try {
+      const r = await fetch(WORKER_URL + 'source', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ license_key: verifiedKey }),
+      });
+      if (!r.ok) throw new Error(String(r.status));
+      const blob = await r.blob();
+      const name = (r.headers.get('Content-Disposition') || '').match(/filename="([^"]+)"/)?.[1] || 'DigitalFront_Source_latest.zip';
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name;
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1000);
+      msg.textContent = '✓ Downloaded ' + name;
+    } catch (e) {
+      msg.textContent = 'Download failed — try again in a moment, or use the zip from your Gumroad receipt.';
+      msg.className = 'err';
+    } finally {
+      btn.disabled = false;
     }
   }
 </script>
